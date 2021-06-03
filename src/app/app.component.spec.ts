@@ -16,16 +16,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'faceit-match-analyser'`, () => {
+  it(`should have as title 'match-analyser'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('faceit-match-analyser');
+    expect(app.title).toEqual('match-analyser');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('faceit-match-analyser app is running!');
+    expect(compiled.querySelector('.content span').textContent).toContain('match-analyser app is running!');
   });
 });
