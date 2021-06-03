@@ -1,0 +1,15 @@
+.main-container {
+  h1 {
+    color: red;
+  }
+}
+
+.inputs,
+.outputs {
+  margin: 30px;
+  padding: 20px;
+}
+
+.btns button>.spinner {
+  margin-right: 8px;
+}
