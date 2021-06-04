@@ -16,7 +16,6 @@ html>body {
   width: 100%;
   height: 100%;
   background-color: #1f1f1f;
-  color: white;
 }
 
 @font-face {
@@ -86,7 +85,7 @@ html>body {
 //   }
 
   .sidebar .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.472);;
+    background-color: rgba(255, 255, 255, 0.5);;
   }
   
   .sidebar .nav-link:hover .feather,
@@ -127,6 +126,8 @@ html>body {
   }
   
   .form-control-dark:focus {
+    color: #fff;
     border-color: transparent;
+    background-color: rgba(255, 255, 255, .1);
     box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
   }

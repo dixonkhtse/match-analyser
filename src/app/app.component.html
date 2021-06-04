@@ -5,12 +5,12 @@
       <div class="match-url form-floating mb-3">
         <input id="matchUrl" name="matchUrl" type="text" class="form-control"
           [class.is-invalid]="submitted && !matchUrl" placeholder="Match URL" [(ngModel)]="matchUrl">
-        <label for="matchUrl">Match URL</label>
+        <label class="text-light" for="matchUrl">Match URL</label>
       </div>
       <div class="faceit-user-name form-floating mb-3">
         <input id="faceitUsername" name="faceitUsername" type="text" class="form-control"
           [class.is-invalid]="submitted && !faceitUsername" placeholder="FACEIT Nickname" [(ngModel)]="faceitUsername">
-        <label for="faceitUsername">FACEIT Nickname</label>
+        <label class="text-light" for="faceitUsername">FACEIT Nickname</label>
       </div>
       <div class="btns d-flex justify-content-between">
         <button type="submit" class="btn btn-primary text-light" [disabled]="!matchUrl || !faceitUsername || analysing"
@@ -68,7 +68,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-bs-target="#nav-map-picks" role="tab" data-bs-toggle="tab">
+            <a class="nav-link" data-bs-target="#nav-map-stats" role="tab" data-bs-toggle="tab">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-map"
                 viewBox="0 0 16 16">
                 <path fill-rule="evenodd"
@@ -82,11 +82,13 @@
     </nav>
 
     <main class="tab-content">
+
+      <!-- Head to head -->
       <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 tab-pane fade show active" role="tabpanel"
         id="nav-match-history">
         <div
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Head to head</h1>
+          <h2 class="text-light">Head to head</h2>
         </div>
 
         <h2>Section title</h2>
@@ -114,10 +116,62 @@
         </div>
       </div>
 
-      <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 tab-pane fade" role="tabpanel" id="nav-map-picks">
+      <!-- Map stats -->
+      <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 tab-pane fade" role="tabpanel" id="nav-map-stats">
         <div
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Map stats</h1>
+          <h2 class="text-light">Map stats</h2>
+        </div>
+
+        <div class="container rounded">
+          <h5 class="text-light mb-3">INPUTS</h5>
+          <form>
+            <div class="match-url form-floating mb-3">
+              <input id="matchUrl" name="matchUrl" type="text" class="form-control form-control-dark"
+                [class.is-invalid]="submitted && !matchUrl" placeholder="Match URL" [(ngModel)]="matchUrl">
+              <label class="text-light" for="matchUrl">Match URL</label>
+            </div>
+            <div class="faceit-user-name form-floating mb-3">
+              <input id="faceitUsername" name="faceitUsername" type="text" class="form-control form-control-dark"
+                [class.is-invalid]="submitted && !faceitUsername" placeholder="FACEIT Nickname"
+                [(ngModel)]="faceitUsername">
+              <label class="text-light" for="faceitUsername">FACEIT Nickname</label>
+            </div>
+            <div class="btns d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary text-light"
+                [disabled]="!matchUrl || !faceitUsername || analysing" (click)="analyse()">
+                <span *ngIf="!analysing">Analyse</span>
+                <ng-container *ngIf="analysing">
+                  <span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  <span class="sr-only">Loading...</span>
+                </ng-container>
+              </button>
+              <button type="button" class="btn btn-danger text-light"
+                [disabled]="(!matchUrl && !faceitUsername) || analysing" (click)="reset()">Reset</button>
+            </div>
+            <div *ngIf="warning" class="text-danger mt-3">Error: {{ warning }}</div>
+          </form>
+        </div>
+        <div *ngIf="result" class="outputs rounded text-light">
+          <h5 class="mb-3">RESULTS</h5>
+          <table class="output-table table table-bordered text-light">
+            <thead>
+              <tr>
+                <th scope="col">Player</th>
+                <th scope="col">Level</th>
+                <th scope="col">ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of result">
+                <td>{{ row.nickname }}</td>
+                <td class="level">
+                  <img [src]="'assets/icons/lv' + row.game_skill_level + '.svg'" />
+                </td>
+                <td>{{ row.player_id }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </main>
