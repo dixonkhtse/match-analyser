@@ -31,32 +31,32 @@ export class AppComponent {
     this.analysing = true;
     try {
       const playerIdList = [];
-      let rows = [];
+      let playerList = [];
 
       await Promise.mapSeries(this.commonMatchesModel, async ({ nickname }, index) => {
-        let row = {}
+        let player = {}
         let playerId;
+
         playerId = await this.getPlayerIdByNickname(nickname);
 
         playerIdList[index] = playerId;
-        row['nickname'] = nickname;
-        row['id'] = playerId;
 
         const matchHistory = await this.getPlayerMatchHistoryById(playerIdList[index]);
-        row['matchHistory'] = matchHistory;
 
-        rows.push(row);
+        player['nickname'] = nickname;
+        player['id'] = playerId;
+        player['matchHistory'] = matchHistory;
+
+        playerList.push(player);
       });
 
-      let commonMatchesIdList = this.intersectMatchHistory(rows[0].matchHistory, rows[1].matchHistory);
+      let commonMatchesIdList = this.intersectMatchHistory(playerList[0].matchHistory, playerList[1].matchHistory);
 
-      console.log(commonMatchesIdList);
-
-      for (let row of rows) {
-        row['commonMatches'] = filter(row.matchHistory, (match) => { return commonMatchesIdList.indexOf(match.matchId) > -1 });
+      for (let player of playerList) {
+        player['commonMatches'] = filter(player.matchHistory, (match) => { return commonMatchesIdList.indexOf(match.matchId) > -1 });
       }
 
-      console.log(rows);
+      console.log(playerList);
     }
     catch (ex) {
       this.warning = ex.message;
@@ -81,6 +81,10 @@ export class AppComponent {
   async getPlayerMatchHistoryById(playerId) {
     return this.http.get(`https://api.faceit.com/stats/v1/stats/time/users/${playerId}/games/csgo?page=0&size=2000`).toPromise();
     // return this.http.get(`${Constants.GET_PLAYERS_ENDPOINT}/${playerId}/history?game=csgo&from=1420041600&limit=2000`, Constants.REQUEST_OPTIONS).toPromise();
+  }
+
+  async getMatchDetails(matchId) {
+    return this.http.get(`${Constants.GET_MATCH_ENDPOINT}/${matchId}`, Constants.REQUEST_OPTIONS).toPromise();
   }
 
   intersectMatchHistory(h1, h2) {
