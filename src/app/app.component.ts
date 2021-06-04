@@ -53,9 +53,8 @@ export class AppComponent {
       console.log(commonMatchesIdList);
 
       for (let row of rows) {
-        row['commonMatches'] = filter(row.matchHistory, (match) => { commonMatchesIdList.indexOf(match.matchId) > -1 });
+        row['commonMatches'] = filter(row.matchHistory, (match) => { return commonMatchesIdList.indexOf(match.matchId) > -1 });
       }
-
 
       console.log(rows);
     }
