@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { split, find, toLower, keyBy, intersectionBy, map, filter } from 'lodash';
+import { split, find, toLower, keyBy, intersectionBy, map, filter, flatten } from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from './common/constants';
 
@@ -57,11 +57,16 @@ export class AppComponent {
       }
 
       await Promise.mapSeries(commonMatchesIdList, async (matchId) => {
-        matchList.push(await this.getMatchDetails(matchId));
+        let matchStats: any = await this.getMatchStats(matchId);
+        for (let round of matchStats.rounds) {
+          round['teams'] = keyBy(round['teams'], 'team_id');
+          matchList.push(round);
+        }
       });
 
+      this.commonMatchesList = matchList;
 
-      console.log(matchList);
+      console.log(this.commonMatchesList);
     }
     catch (ex) {
       this.warning = ex.message;
@@ -88,8 +93,12 @@ export class AppComponent {
     // return this.http.get(`${Constants.GET_PLAYERS_ENDPOINT}/${playerId}/history?game=csgo&from=1420041600&limit=2000`, Constants.REQUEST_OPTIONS).toPromise();
   }
 
-  async getMatchDetails(matchId) {
+  async getMatchSummary(matchId) {
     return this.http.get(`${Constants.GET_MATCH_ENDPOINT}/${matchId}`, Constants.REQUEST_OPTIONS).toPromise();
+  }
+
+  async getMatchStats(matchId) {
+    return this.http.get(`${Constants.GET_MATCH_ENDPOINT}/${matchId}/stats`, Constants.REQUEST_OPTIONS).toPromise();
   }
 
   intersectMatchHistory(h1, h2) {

@@ -1,54 +1,3 @@
-<!-- <div class="main-container bg-secondary">
-  <div class="inputs rounded">
-    <h5 class="text-light mb-3">INPUTS</h5>
-    <form>
-      <div class="match-url form-floating mb-3">
-        <input id="matchUrl" name="matchUrl" type="text" class="form-control"
-          [class.is-invalid]="submitted && !matchUrl" placeholder="Match URL" [(ngModel)]="matchUrl">
-        <label class="text-light" for="matchUrl">Match URL</label>
-      </div>
-      <div class="faceit-user-name form-floating mb-3">
-        <input id="faceitUsername" name="faceitUsername" type="text" class="form-control"
-          [class.is-invalid]="submitted && !faceitUsername" placeholder="FACEIT Nickname" [(ngModel)]="faceitUsername">
-        <label class="text-light" for="faceitUsername">FACEIT Nickname</label>
-      </div>
-      <div class="btns d-flex justify-content-between">
-        <button type="submit" class="btn btn-primary text-light" [disabled]="!matchUrl || !faceitUsername || analysing"
-          (click)="analyse()">
-          <span *ngIf="!analysing">Analyse</span>
-          <ng-container *ngIf="analysing">
-            <span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            <span class="sr-only">Loading...</span>
-          </ng-container>
-        </button>
-        <button type="button" class="btn btn-danger text-light" [disabled]="(!matchUrl && !faceitUsername) || analysing"
-          (click)="reset()">Reset</button>
-      </div>
-      <div *ngIf="warning" class="text-danger mt-3">Error: {{ warning }}</div>
-    </form>
-  </div>
-  <div *ngIf="result" class="outputs rounded text-light">
-    <h5 class="mb-3">RESULTS</h5>
-    <table class="output-table table table-bordered text-light">
-      <thead>
-        <tr>
-          <th scope="col">Player</th>
-          <th scope="col">Level</th>
-          <th scope="col">ID</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of result">
-          <td>{{ row.nickname }}</td>
-          <td class="level">
-            <img [src]="'assets/icons/lv' + row.game_skill_level + '.svg'" />
-          </td>
-          <td>{{ row.player_id }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div> -->
 <div class="container-fluid faceit-primary">
   <div class="row">
     <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block faceit-dark sidebar collapse">
@@ -123,6 +72,43 @@
             </form>
           </div>
         </div>
+
+        <!-- Table -->
+        <div *ngIf="commonMatchesList" class="outputs rounded text-light">
+          <h5 class="mb-3">RESULTS</h5>
+          <table class="output-table table table-bordered text-light">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Map</th>
+                <th scope="col">Winner</th>
+                <th scope="col">Score</th>
+                <th scope="col">Match Room</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let match of commonMatchesList">
+                <td id="date">
+                  <!-- {{ match['finished_at'] * 1000 | date:'dd/MM/yyyy' }}  -->
+                </td>
+                <td id="map">
+                  {{match['round_stats'].Map}}
+                </td>
+                <td id="winner">
+                  {{match.teams[match['round_stats'].Winner]['team_stats'].Team}}
+                </td>
+                <td id="score">
+                  {{match['round_stats'].Score}}
+                </td>
+                <td id="matchRoom">
+                  <a href="https://www.faceit.com/en/csgo/room/{{match['match_id']}}" target="_blank">
+                    Go to match Room</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
 
       <!-- Map stats -->
