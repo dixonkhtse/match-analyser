@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { split, find, toLower, keyBy, intersectionBy, map, filter, flatten } from 'lodash';
+import { split, find, toLower, keyBy, intersectionBy, map, filter, set } from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from './common/constants';
 
@@ -14,7 +14,7 @@ export class AppComponent {
   public commonMatchesModel = [
     { nickname: 'IcedGreenTea' },
     { nickname: 'yymac' },
-  ]
+  ];
   public commonMatchesList: any;
 
   // Map stats
@@ -31,10 +31,11 @@ export class AppComponent {
     this.analysing = true;
     try {
       const playerIdList = [];
-      let playerList = [], matchList = [];
+      const playerList = [];
+      const matchList = [];
 
       await Promise.mapSeries(this.commonMatchesModel, async ({ nickname }, index) => {
-        let player = {}
+        const player: any = {};
         let playerId;
 
         playerId = await this.getPlayerIdByNickname(nickname);
@@ -42,24 +43,24 @@ export class AppComponent {
         playerIdList[index] = playerId;
 
         const matchHistory = await this.getPlayerMatchHistoryById(playerIdList[index]);
-
-        player['nickname'] = nickname;
-        player['id'] = playerId;
-        player['matchHistory'] = matchHistory;
+        set(player, 'nickname', nickname);
+        set(player, 'id', playerId);
+        set(player, 'matchHistory', matchHistory);
 
         playerList.push(player);
       });
 
-      let commonMatchesIdList = this.intersectMatchHistory(playerList[0].matchHistory, playerList[1].matchHistory);
+      const commonMatchesIdList = this.intersectMatchHistory(playerList[0].matchHistory, playerList[1].matchHistory);
 
-      for (let player of playerList) {
-        player['commonMatches'] = filter(player.matchHistory, (match) => { return commonMatchesIdList.indexOf(match.matchId) > -1 });
+      for (const player of playerList) {
+        const commonMatches = filter(player.matchHistory, (match) => commonMatchesIdList.indexOf(match.matchId) > -1);
+        set(player, 'commonMatches', commonMatches);
       }
 
       await Promise.mapSeries(commonMatchesIdList, async (matchId) => {
-        let matchStats: any = await this.getMatchStats(matchId);
-        for (let round of matchStats.rounds) {
-          round['teams'] = keyBy(round['teams'], 'team_id');
+        const matchStats: any = await this.getMatchStats(matchId);
+        for (const round of matchStats.rounds) {
+          set(round, 'teams', keyBy(round.teams, 'team_id'));
           matchList.push(round);
         }
       });
@@ -77,7 +78,7 @@ export class AppComponent {
   }
 
   async getPlayerByNickname(nickname) {
-    return this.http.get(`${Constants.GET_PLAYERS_ENDPOINT}?nickname=${nickname}`, Constants.REQUEST_OPTIONS).toPromise()
+    return this.http.get(`${Constants.GET_PLAYERS_ENDPOINT}?nickname=${nickname}`, Constants.REQUEST_OPTIONS).toPromise();
   }
 
   async getPlayerIdByNickname(nickname) {
@@ -85,12 +86,11 @@ export class AppComponent {
     if (!player) {
       throw new Error('Player not found.');
     }
-    return player['player_id'];
+    return player.player_id;
   }
 
   async getPlayerMatchHistoryById(playerId) {
     return this.http.get(`https://api.faceit.com/stats/v1/stats/time/users/${playerId}/games/csgo?page=0&size=2000`).toPromise();
-    // return this.http.get(`${Constants.GET_PLAYERS_ENDPOINT}/${playerId}/history?game=csgo&from=1420041600&limit=2000`, Constants.REQUEST_OPTIONS).toPromise();
   }
 
   async getMatchSummary(matchId) {
