@@ -44,6 +44,7 @@ export class AppComponent {
       }
       const rows = [];
       await Promise.mapSeries(targetFaction.roster, ({ nickname, game_skill_level, player_id }) => {
+        // get player stats here
         rows.push({ nickname, game_skill_level, player_id });
       });
       this.result = rows;

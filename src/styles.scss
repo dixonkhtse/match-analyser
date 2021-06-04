@@ -1,1 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
+$primary: #f50;
+$secondary: #1f1f1f;
+$success:#5dbb29;
+$danger: #d64242;
+$light: #ffffff;
+$dark: #181818;
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+
+html,
+html>body {
+  width: 100%;
+  height: 100%;
+}
