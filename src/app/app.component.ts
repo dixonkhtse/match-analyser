@@ -10,7 +10,7 @@ import { Constants } from './common/constants';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  public matchUrl = '';
+  public matchUrl = 'https://www.faceit.com/en/csgo/room/1-eb6d96eb-2403-4713-b730-cb91b5c54a7c/scoreboard';
   public faceitUsername = '';
   public submitted = false;
   public analysing = false;
