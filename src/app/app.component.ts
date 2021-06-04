@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { split, find } from 'lodash';
+import { split, find, toLower } from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from './common/constants';
 
@@ -38,7 +38,9 @@ export class AppComponent {
         throw new Error('Result not found.');
       }
       const { teams } = response;
-      let targetFaction = find(teams, ({ roster }) => find(roster, ({ nickname }) => nickname === this.faceitUsername));
+      let targetFaction = find(teams, ({ roster }) =>
+        find(roster, ({ nickname }) => toLower(nickname).includes(toLower(this.faceitUsername)))
+      );
       if (!targetFaction) {
         ({ faction1: targetFaction } = teams);
       }

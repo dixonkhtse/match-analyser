@@ -13,11 +13,11 @@
         <label for="faceitUsername">FACEIT Nickname</label>
       </div>
       <div class="btns d-flex justify-content-between">
-        <button type="submit" class="btn btn-primary text-light mr-3"
-          [disabled]="!matchUrl || !faceitUsername || analysing" (click)="analyse()">
+        <button type="submit" class="btn btn-primary text-light" [disabled]="!matchUrl || !faceitUsername || analysing"
+          (click)="analyse()">
           <span *ngIf="!analysing">Analyse</span>
           <ng-container *ngIf="analysing">
-            <span class="spinner spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>
+            <span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             <span class="sr-only">Loading...</span>
           </ng-container>
         </button>
@@ -29,7 +29,7 @@
   </div>
   <div *ngIf="result" class="outputs rounded text-light">
     <h5 class="mb-3">RESULTS</h5>
-    <table class="table table-bordered text-light">
+    <table class="output-table table table-bordered text-light">
       <thead>
         <tr>
           <th scope="col">Player</th>
@@ -40,7 +40,9 @@
       <tbody>
         <tr *ngFor="let row of result">
           <td>{{ row.nickname }}</td>
-          <td>{{ row.game_skill_level }}</td>
+          <td class="level">
+            <img [src]="'assets/icons/lv' + row.game_skill_level + '.svg'" />
+          </td>
           <td>{{ row.player_id }}</td>
         </tr>
       </tbody>
