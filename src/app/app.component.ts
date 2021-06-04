@@ -31,7 +31,7 @@ export class AppComponent {
     this.analysing = true;
     try {
       const playerIdList = [];
-      let playerList = [];
+      let playerList = [], matchList = [];
 
       await Promise.mapSeries(this.commonMatchesModel, async ({ nickname }, index) => {
         let player = {}
@@ -56,7 +56,12 @@ export class AppComponent {
         player['commonMatches'] = filter(player.matchHistory, (match) => { return commonMatchesIdList.indexOf(match.matchId) > -1 });
       }
 
-      console.log(playerList);
+      await Promise.mapSeries(commonMatchesIdList, async (matchId) => {
+        matchList.push(await this.getMatchDetails(matchId));
+      });
+
+
+      console.log(matchList);
     }
     catch (ex) {
       this.warning = ex.message;
