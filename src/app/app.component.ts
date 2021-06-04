@@ -16,6 +16,10 @@ export class AppComponent {
   public analysing = false;
   public result: any;
   public warning = '';
+  public commonMatchesModel = [
+    { nickname: 'IcedGreenTea' },
+    { nickname: 'itdog' },
+  ]
 
   constructor(private http: HttpClient) { }
 

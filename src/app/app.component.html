@@ -88,31 +88,36 @@
         id="nav-match-history">
         <div
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h2 class="text-light">Head to head</h2>
+          <h2 class="page-title text-light">Head to head</h2>
         </div>
 
-        <h2 class="text-light">Section title</h2>
-        <div class="table-responsive">
-          <table class="table table-bordered text-light">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Header</th>
-                <th>Header</th>
-                <th>Header</th>
-                <th>Header</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1,001</td>
-                <td>random</td>
-                <td>data</td>
-                <td>placeholder</td>
-                <td>text</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="card text-white bg-dark mb-3">
+          <div class="card-header">Find common matches</div>
+          <div class="card-body">
+            <form>
+              <!-- Input fields -->
+              <div *ngFor="let player of commonMatchesModel | keyvalue; index as i;"
+                class="player1-nickname form-floating mb-3">
+                <input id="player{{i+1}}Nickname" name="player{{i+1}}Nickname" type="text"
+                  class="form-control form-control-dark" [class.is-invalid]="submitted && !matchUrl"
+                  placeholder="Player{{i+1}} Nickname" [(ngModel)]="commonMatchesModel[i].nickname">
+                <label class="text-light" for="player{{i+1}}Nickname">Player{{i+1}} Nickname</label>
+              </div>
+              <!-- Buttons -->
+              <div class="btns d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary text-light"
+                  [disabled]="!matchUrl || !faceitUsername || analysing" (click)="analyse()">
+                  <span *ngIf="!analysing">Analyse</span>
+                  <ng-container *ngIf="analysing">
+                    <span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span class="sr-only">Loading...</span>
+                  </ng-container>
+                </button>
+                <button type="button" class="btn btn-danger text-light"
+                  [disabled]="(!matchUrl && !faceitUsername) || analysing" (click)="reset()">Reset</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -120,12 +125,13 @@
       <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 tab-pane fade" role="tabpanel" id="nav-map-stats">
         <div
           class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h2 class="text-light">Map stats</h2>
+          <h2 class="page-title text-light">Map stats</h2>
         </div>
 
-        <div class="container rounded">
+        <div class="container form-wrapper rounded">
           <h5 class="text-light mb-3">INPUTS</h5>
           <form>
+            <!-- Input fields -->
             <div class="match-url form-floating mb-3">
               <input id="matchUrl" name="matchUrl" type="text" class="form-control form-control-dark"
                 [class.is-invalid]="submitted && !matchUrl" placeholder="Match URL" [(ngModel)]="matchUrl">
@@ -137,6 +143,7 @@
                 [(ngModel)]="faceitUsername">
               <label class="text-light" for="faceitUsername">FACEIT Nickname</label>
             </div>
+            <!-- Buttons -->
             <div class="btns d-flex justify-content-between">
               <button type="submit" class="btn btn-primary text-light"
                 [disabled]="!matchUrl || !faceitUsername || analysing" (click)="analyse()">
@@ -174,6 +181,16 @@
           </table>
         </div>
       </div>
+
+      <!-- Page Template -->
+      <!-- <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4 tab-pane fade show active" role="tabpanel"
+        id="nav-match-history">
+        <div
+          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h2 class="page-title text-light">Head to head</h2>
+        </div>
+      </div> -->
     </main>
+
   </div>
 </div>
