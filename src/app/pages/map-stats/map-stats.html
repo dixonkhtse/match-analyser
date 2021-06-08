@@ -32,18 +32,19 @@
   <table outputs-content class="output-table table table-bordered text-light">
     <thead>
       <tr>
-        <th scope="col">Player</th>
-        <th scope="col">Level</th>
-        <th scope="col">ID</th>
+        <th scope="col" *ngFor="let col of columnsConfig">
+          {{ col.label }}
+        </th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let row of results">
-        <td>{{ row.nickname }}</td>
-        <td class="level">
-          <img [src]="'assets/icons/lv' + row.game_skill_level + '.svg'" />
-        </td>
-        <td>{{ row.player_id }}</td>
+        <ng-container *ngFor="let col of columnsConfig">
+          <td *ngIf="!col.isImage">{{ row[col.key] }}</td>
+          <td *ngIf="col.isImage" [class]="col.class">
+            <img [src]="col.srcPrefix + row[col.key] + col.srcPostfix" />
+          </td>
+        </ng-container>
       </tr>
     </tbody>
   </table>

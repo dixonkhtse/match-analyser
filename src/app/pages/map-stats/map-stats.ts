@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { split, find, toLower, keyBy, intersectionBy, map, filter, set } from 'lodash';
+import { get, set, pick, split, find, toLower, each } from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from '../../common/constants';
 
@@ -16,6 +16,23 @@ export class MapStatsComponent {
   public analysing = false;
   public results: any;
   public warning = '';
+  public columnsConfig = [
+    { key: 'nickname', label: 'Player' },
+    {
+      key: 'game_skill_level',
+      label: 'Level',
+      class: 'level',
+      isImage: true,
+      srcPrefix: 'assets/icons/lv',
+      srcPostfix: '.svg',
+    },
+  ];
+  public statKeys = [
+    'Matches',
+    'Win Rate %',
+    'K/D Ratio',
+  ];
+  public maps: any = [];
 
   constructor(private http: HttpClient) { }
 
@@ -42,10 +59,30 @@ export class MapStatsComponent {
         ({ faction1: targetFaction } = teams);
       }
       const rows = [];
-      await Promise.mapSeries(targetFaction.roster, ({ nickname, game_skill_level, player_id }) => {
+      await Promise.mapSeries(targetFaction.roster, async ({ nickname, game_skill_level, player_id }) => {
         // get player stats here
-        rows.push({ nickname, game_skill_level, player_id });
+        const res: any = await this.http.get(`${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`, Constants.REQUEST_OPTIONS).toPromise();
+        if (!res) {
+          return true;
+        }
+        console.log(`player res ${nickname}:`, res);
+        const { segments } = res;
+        const playerData: any = {
+          nickname,
+          game_skill_level,
+          player_id,
+        };
+        each(segments, mapData => {
+          if (!this.maps.includes(mapData.label)) {
+            this.maps.push(mapData.label);
+          }
+          set(playerData, [mapData.label], pick(mapData.stats, this.statKeys));
+        });
+        rows.push(playerData);
+        return true;
       });
+      console.log('rows', rows);
+      console.log('this.maps', this.maps);
       this.results = rows;
     } catch (ex) {
       this.warning = ex.message;
