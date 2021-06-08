@@ -1,0 +1,24 @@
+<!-- Page Title -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h2 class="page-title text-light">
+    <ng-content select="[page-title]"></ng-content>
+  </h2>
+</div>
+
+<!-- Page Inputs -->
+<div class="card text-white bg-dark mb-3">
+  <div class="card-header">
+    <ng-content select="[inputs-title]"></ng-content>
+  </div>
+  <div class="card-body">
+    <ng-content select="[inputs-form]"></ng-content>
+  </div>
+</div>
+
+<!-- Page Outputs -->
+<div *ngIf="hasOutput" class="outputs rounded text-light">
+  <h5 class="mb-3">
+    <ng-content select="[outputs-title]"></ng-content>
+  </h5>
+  <ng-content select="[outputs-content]"></ng-content>
+</div>

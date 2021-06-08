@@ -2,72 +2,12 @@
   width: 100%;
   height: 100%;
   padding: 16px 32px;
-
-  >h1 {
-    margin: 16px;
-  }
 }
 
-.inputs,
-.outputs {
-  padding: 16px;
-  box-sizing: border-box;
-}
-
-.inputs {
-  width: 75%;
-  min-width: 360px;
-}
-
-.match-url {
-  width: 100%;
-}
-
-.faceit-user-name {
-  width: 50%;
-}
-
-.btns>button {
-  margin-right: 16px;
-
-  &:last-child {
-    margin-right: 0;
-  }
-
-  >.spinner {
-    margin-right: 8px;
-  }
-}
-
-@media screen and (max-width: 408px) {
-
-  .inputs,
-  .match-url,
-  .faceit-user-name {
-    width: 100% !important;
-  }
-
-  .inputs {
-    min-width: unset !important;
-  }
-}
-
-.output-table {
-
-  th,
-  td {
-    text-align: center;
-  }
-
-  td.level>img {
-    width: 32px;
-    height: 32px;
-  }
+.nav-item {
+  cursor: pointer;
 }
 
 body {
   font-size: .875rem;
 }
-
-
-

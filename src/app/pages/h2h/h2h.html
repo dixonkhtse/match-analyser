@@ -1,0 +1,57 @@
+<app-base-page [hasOutput]="!!commonMatchesList">
+  <span page-title>Head to Head</span>
+  <span inputs-title>Find Common Matches</span>
+  <form inputs-form>
+    <!-- Input fields -->
+    <div *ngFor="let player of commonMatchesModel | keyvalue; index as i;" class="player1-nickname form-floating mb-3">
+      <input id="player{{i+1}}Nickname" name="player{{i+1}}Nickname" type="text" class="form-control form-control-dark"
+        [class.is-invalid]="submitted && !commonMatchesModel[i].nickname" placeholder="Player{{i+1}} Nickname"
+        [(ngModel)]="commonMatchesModel[i].nickname">
+      <label class="text-light" for="player{{i+1}}Nickname">Player{{i+1}} Nickname</label>
+    </div>
+    <!-- Buttons -->
+    <div class="btns d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary text-light" [disabled]="analysing" (click)="findCommonMatches()">
+        <span *ngIf="!analysing">Analyse</span>
+        <ng-container *ngIf="analysing">
+          <span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span class="sr-only">Loading...</span>
+        </ng-container>
+      </button>
+      <button type="button" class="btn btn-danger text-light" [disabled]="!commonMatchesModel || analysing"
+        (click)="reset()">Reset</button>
+    </div>
+  </form>
+  <span outputs-title>Results</span>
+  <table outputs-content class="output-table table table-bordered text-light">
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Map</th>
+        <th scope="col">Winner</th>
+        <th scope="col">Score</th>
+        <th scope="col">Match Room</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let match of commonMatchesList">
+        <td id="date">
+          <!-- {{ match['finished_at'] * 1000 | date:'dd/MM/yyyy' }}  -->
+        </td>
+        <td id="map">
+          {{match['round_stats'].Map}}
+        </td>
+        <td id="winner">
+          {{match.teams[match['round_stats'].Winner]['team_stats'].Team}}
+        </td>
+        <td id="score">
+          {{match['round_stats'].Score}}
+        </td>
+        <td id="matchRoom">
+          <a href="https://www.faceit.com/en/csgo/room/{{match['match_id']}}" target="_blank">
+            Go to match Room</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</app-base-page>

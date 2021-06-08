@@ -1,0 +1,50 @@
+<app-base-page [hasOutput]="!!results">
+  <span page-title>Match Statistics</span>
+  <span inputs-title>Enter Match Link and your FACEIT Nickname</span>
+  <form inputs-form>
+    <!-- Input fields -->
+    <div class="match-url form-floating mb-3">
+      <input id="matchUrl" name="matchUrl" type="text" class="form-control form-control-dark"
+        [class.is-invalid]="submitted && !matchUrl" placeholder="Match URL" [(ngModel)]="matchUrl">
+      <label class="text-light" for="matchUrl">Match URL</label>
+    </div>
+    <div class="faceit-user-name form-floating mb-3">
+      <input id="faceitUsername" name="faceitUsername" type="text" class="form-control form-control-dark"
+        [class.is-invalid]="submitted && !faceitUsername" placeholder="FACEIT Nickname" [(ngModel)]="faceitUsername">
+      <label class="text-light" for="faceitUsername">FACEIT Nickname</label>
+    </div>
+    <!-- Buttons -->
+    <div class="btns d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary text-light" [disabled]="!matchUrl || !faceitUsername || analysing"
+        (click)="analyse()">
+        <span *ngIf="!analysing">Analyse</span>
+        <ng-container *ngIf="analysing">
+          <span class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span class="sr-only">Loading...</span>
+        </ng-container>
+      </button>
+      <button type="button" class="btn btn-danger text-light" [disabled]="(!matchUrl && !faceitUsername) || analysing"
+        (click)="reset()">Reset</button>
+    </div>
+    <div *ngIf="warning" class="text-danger mt-3">Error: {{ warning }}</div>
+  </form>
+  <span outputs-title>Results</span>
+  <table outputs-content class="output-table table table-bordered text-light">
+    <thead>
+      <tr>
+        <th scope="col">Player</th>
+        <th scope="col">Level</th>
+        <th scope="col">ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of results">
+        <td>{{ row.nickname }}</td>
+        <td class="level">
+          <img [src]="'assets/icons/lv' + row.game_skill_level + '.svg'" />
+        </td>
+        <td>{{ row.player_id }}</td>
+      </tr>
+    </tbody>
+  </table>
+</app-base-page>
