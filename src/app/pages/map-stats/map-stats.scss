@@ -5,8 +5,33 @@
     text-align: center;
   }
 
-  td.level>img {
-    width: 32px;
-    height: 32px;
+  div {
+    &.poor {
+      color: #d64242;
+    }
+
+    &.good {
+      color: #5dbb29;
+    }
+  }
+
+  th>div.player-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    >.nickname,
+    img {
+      margin-right: 4px;
+    }
+
+    >.kd {
+      font-size: 10px;
+    }
+
+    img {
+      width: 32px;
+      height: 32px;
+    }
   }
 }

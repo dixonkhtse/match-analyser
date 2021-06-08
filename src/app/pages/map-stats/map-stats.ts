@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { get, set, pick, split, find, toLower, each } from 'lodash';
+import {
+  get, set, pick,
+  split, find, toLower,
+  each, map, size,
+  sortBy, reverse,
+} from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from '../../common/constants';
 
@@ -16,25 +21,54 @@ export class MapStatsComponent {
   public analysing = false;
   public results: any;
   public warning = '';
-  public columnsConfig = [
-    { key: 'nickname', label: 'Player' },
+  public rowsConfig = [
+    {
+      type: 'single',
+      key: 'nickname',
+      label: 'Player',
+    },
     {
       key: 'game_skill_level',
       label: 'Level',
       class: 'level',
-      isImage: true,
+      type: 'image',
       srcPrefix: 'assets/icons/lv',
       srcPostfix: '.svg',
     },
   ];
+  public columnsConfig = {
+    'Win Rate %': {
+      postfix: '%',
+      classes: [
+        { min: 0, max: 49, value: 'poor' },
+        { min: 50, max: 59, value: 'average' },
+        { min: 60, max: 100, value: 'good' },
+      ]
+    },
+    'Average K/D Ratio': {
+      classes: [
+        { min: 0, max: 0.99, value: 'poor' },
+        { min: 1, max: 1.2, value: 'average' },
+        { min: 1.21, max: 99, value: 'good' },
+      ]
+    },
+  };
   public statKeys = [
     'Matches',
     'Win Rate %',
-    'K/D Ratio',
+    'Average K/D Ratio',
   ];
   public maps: any = [];
 
   constructor(private http: HttpClient) { }
+
+  public findClass(value, statKey) {
+    if (!get(this.columnsConfig, [statKey, 'classes'])) {
+      return '';
+    }
+    const classConfig = find(get(this.columnsConfig, [statKey, 'classes']), ({ min, max }) => value >= min && value <= max);
+    return get(classConfig, 'value', '');
+  }
 
   async analyse() {
     this.warning = '';
@@ -58,32 +92,41 @@ export class MapStatsComponent {
       if (!targetFaction) {
         ({ faction1: targetFaction } = teams);
       }
-      const rows = [];
+      let columns = [];
       await Promise.mapSeries(targetFaction.roster, async ({ nickname, game_skill_level, player_id }) => {
-        // get player stats here
-        const res: any = await this.http.get(`${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`, Constants.REQUEST_OPTIONS).toPromise();
+        const path = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`;
+        const res: any = await this.http.get(path, Constants.REQUEST_OPTIONS).toPromise();
         if (!res) {
           return true;
         }
-        console.log(`player res ${nickname}:`, res);
-        const { segments } = res;
+        const { lifetime, segments } = res;
         const playerData: any = {
           nickname,
           game_skill_level,
           player_id,
+          avgKd: get(lifetime, 'Average K/D Ratio'),
         };
         each(segments, mapData => {
+          if (mapData.label.substr(0, 3) !== 'de_') {
+            return true;
+          }
           if (!this.maps.includes(mapData.label)) {
             this.maps.push(mapData.label);
           }
           set(playerData, [mapData.label], pick(mapData.stats, this.statKeys));
+          return true;
         });
-        rows.push(playerData);
+        columns.push(playerData);
         return true;
       });
-      console.log('rows', rows);
-      console.log('this.maps', this.maps);
-      this.results = rows;
+      columns = reverse(sortBy(columns, ['avgKd', 'game_skill_level']));
+      this.rowsConfig.push(...map(this.maps, mapName => ({
+        type: 'statKeys',
+        key: mapName,
+        label: mapName,
+        rowSpan: size(this.statKeys),
+      })));
+      this.results = columns;
     } catch (ex) {
       this.warning = ex.message;
       this.results = null;

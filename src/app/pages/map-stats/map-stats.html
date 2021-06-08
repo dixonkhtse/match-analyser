@@ -32,17 +32,32 @@
   <table outputs-content class="output-table table table-bordered text-light">
     <thead>
       <tr>
-        <th scope="col" *ngFor="let col of columnsConfig">
-          {{ col.label }}
+        <th>Maps</th>
+        <th scope="col" *ngFor="let col of results" [attr.colspan]="statKeys.length">
+          <div class="player-header">
+            <div class="nickname">{{ col.nickname }}</div>
+            <img src="assets/icons/lv{{col.game_skill_level}}.svg" />
+            <div class="kd">({{ col.avgKd }})</div>
+          </div>
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let row of results">
-        <ng-container *ngFor="let col of columnsConfig">
-          <td *ngIf="!col.isImage">{{ row[col.key] }}</td>
-          <td *ngIf="col.isImage" [class]="col.class">
-            <img [src]="col.srcPrefix + row[col.key] + col.srcPostfix" />
+      <tr>
+        <td></td>
+        <ng-container *ngFor="let col of results">
+          <td *ngFor="let statKey of statKeys">{{ statKey }}</td>
+        </ng-container>
+      </tr>
+      <tr *ngFor="let map of maps">
+        <td>{{ map }}</td>
+        <ng-container *ngFor="let col of results">
+          <td *ngFor="let statKey of statKeys">
+            <div *ngIf="col[map] && col[map][statKey] !== undefined" [class]="findClass(col[map][statKey], statKey)">
+              <span>{{ col[map][statKey] }}</span>
+              <span
+                *ngIf="columnsConfig[statKey] && columnsConfig[statKey].postfix">{{ columnsConfig[statKey].postfix }}</span>
+            </div>
           </td>
         </ng-container>
       </tr>
