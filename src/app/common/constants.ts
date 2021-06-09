@@ -7,4 +7,13 @@ export class Constants {
   public static REQUEST_OPTIONS: any = {
     headers: { Authorization: `Bearer ${Constants.AUTH_TOKEN}` },
   };
+  public static ACTIVE_DUTY_MAPS = [
+    'de_dust2',
+    'de_mirage',
+    'de_inferno',
+    'de_overpass',
+    'de_nuke',
+    'de_vertigo',
+    'de_ancient',
+  ];
 }

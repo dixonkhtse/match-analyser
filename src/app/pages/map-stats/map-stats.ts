@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Sort } from '@angular/material/sort';
 import {
-  get, set, pick,
-  split, find, toLower,
-  each, map, size,
-  sortBy, reverse,
+  get, set, split, mean,
+  find, findKey, toLower, each,
+  map as _map, sortBy, reverse,
 } from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from '../../common/constants';
-
 @Component({
   selector: 'app-map-stats',
   templateUrl: './map-stats.html',
@@ -21,59 +20,90 @@ export class MapStatsComponent {
   public analysing = false;
   public results: any;
   public warning = '';
-  public rowsConfig = [
-    {
-      type: 'single',
-      key: 'nickname',
-      label: 'Player',
-    },
-    {
-      key: 'game_skill_level',
-      label: 'Level',
-      class: 'level',
-      type: 'image',
-      srcPrefix: 'assets/icons/lv',
-      srcPostfix: '.svg',
-    },
+  public rawData: any = [];
+  public rawAvgData: any = [];
+  public sortedData: any;
+  public sortedAvgData: any;
+  public players: any = [];
+  public sortedPlayers: any = [];
+  public pSortModel: any = {};
+  public pSortFields: any = [
+    { key: 'game_skill_level', label: 'Level' },
+    { key: 'avgKd', label: 'Average K/D Ratio' },
   ];
-  public columnsConfig = {
-    'Win Rate %': {
-      postfix: '%',
-      classes: [
-        { min: 0, max: 49, value: 'poor' },
-        { min: 50, max: 59, value: 'average' },
-        { min: 60, max: 100, value: 'good' },
-      ]
+  public statKeyConfigs = [{
+    key: 'Matches',
+    digitsInfo: '0.0-0',
+  }, {
+    key: 'Win Rate %',
+    label: 'Win Rate',
+    postfix: '%',
+    classes: {
+      poor: [0, 49],
+      average: [50, 59],
+      good: [60, 100],
     },
-    'Average K/D Ratio': {
-      classes: [
-        { min: 0, max: 0.99, value: 'poor' },
-        { min: 1, max: 1.2, value: 'average' },
-        { min: 1.21, max: 99, value: 'good' },
-      ]
+    digitsInfo: '0.0-0',
+  }, {
+    key: 'Average K/D Ratio',
+    label: 'Avg. K/D',
+    classes: {
+      poor: [0, 0.99],
+      average: [1, 1.2],
+      good: [1.21, 99],
     },
-  };
-  public statKeys = [
-    'Matches',
-    'Win Rate %',
-    'Average K/D Ratio',
-  ];
-  public maps: any = [];
+    digitsInfo: '1.2-2',
+  }];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.rawData = _map(Constants.ACTIVE_DUTY_MAPS, map => ({ map }));
+  }
 
-  public findClass(value, statKey) {
-    if (!get(this.columnsConfig, [statKey, 'classes'])) {
+  compare(a, b, isAsc) {
+    if (a === undefined || b === undefined) {
+      return 1;
+    }
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
+  sortData(sort: Sort, sortedDataKey, rawDataKey) {
+    const data = this[rawDataKey].slice();
+    if (!sort.active || sort.direction === '') {
+      this[sortedDataKey] = data;
+      return;
+    }
+    this[sortedDataKey] = data.sort((a, b) => this.compare(get(a, sort.active), get(b, sort.active), sort.direction === 'asc'));
+  }
+
+  sortPlayers() {
+    let sorted = this.players.slice();
+    if (!this.pSortModel.sortKey) {
+      return;
+    }
+    sorted = sortBy(this.players, this.pSortModel.sortKey);
+    if (!this.pSortModel._isAsc) {
+      sorted = reverse(sorted);
+    }
+    this.sortedPlayers = sorted;
+  }
+
+  public findClass(value, statKeyConf) {
+    const classes = get(statKeyConf, 'classes');
+    if (!classes) {
       return '';
     }
-    const classConfig = find(get(this.columnsConfig, [statKey, 'classes']), ({ min, max }) => value >= min && value <= max);
-    return get(classConfig, 'value', '');
+    return findKey(classes, ([min, max]) => value >= min && value <= max) || '';
   }
 
   async analyse() {
     this.warning = '';
     this.submitted = true;
     this.analysing = true;
+    this.players = [];
+    this.rawData = _map(Constants.ACTIVE_DUTY_MAPS, map => ({ map }));
+    this.sortedData = null;
+    this.sortedAvgData = null;
+    this.sortedPlayers = [];
     try {
       const splitted = split(this.matchUrl, '/');
       const matchIdIdx = splitted.indexOf('room') + 1;
@@ -92,7 +122,6 @@ export class MapStatsComponent {
       if (!targetFaction) {
         ({ faction1: targetFaction } = teams);
       }
-      let columns = [];
       await Promise.mapSeries(targetFaction.roster, async ({ nickname, game_skill_level, player_id }) => {
         const path = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`;
         const res: any = await this.http.get(path, Constants.REQUEST_OPTIONS).toPromise();
@@ -107,35 +136,57 @@ export class MapStatsComponent {
           avgKd: get(lifetime, 'Average K/D Ratio'),
         };
         each(segments, mapData => {
-          if (mapData.label.substr(0, 3) !== 'de_') {
+          const { label: mapName } = mapData;
+          if (!Constants.ACTIVE_DUTY_MAPS.includes(mapName)) {
             return true;
           }
-          if (!this.maps.includes(mapData.label)) {
-            this.maps.push(mapData.label);
+          const mapDataRow = find(this.rawData, ({ map }) => map === mapName);
+          if (!mapDataRow) {
+            return true;
           }
-          set(playerData, [mapData.label], pick(mapData.stats, this.statKeys));
+          each(this.statKeyConfigs, ({ key }) => {
+            const dataKey = `${player_id}_${key}`;
+            set(mapDataRow, dataKey, +get(mapData.stats, key));
+          });
           return true;
         });
-        columns.push(playerData);
+        this.players.push(playerData);
         return true;
       });
-      columns = reverse(sortBy(columns, ['avgKd', 'game_skill_level']));
-      this.rowsConfig.push(...map(this.maps, mapName => ({
-        type: 'statKeys',
-        key: mapName,
-        label: mapName,
-        rowSpan: size(this.statKeys),
-      })));
-      this.results = columns;
+      this.rawAvgData = _map(this.rawData, row => {
+        const obj = { map: row.map };
+        const values: any = {};
+        each(row, (value, key) => {
+          const statKeyConf = find(this.statKeyConfigs, (item) => key.includes(item.key));
+          if (!statKeyConf) {
+            return true;
+          }
+          const { key: statKey } = statKeyConf;
+          if (!values[statKey]) {
+            values[statKey] = [];
+          }
+          values[statKey].push(value);
+          return true;
+        });
+        each(values, (arr, key) => {
+          set(obj, key, mean(arr));
+        });
+        return obj;
+      });
+      this.sortedPlayers = this.players.slice();
+      this.sortedData = this.rawData.slice();
+      this.sortedAvgData = this.rawAvgData.slice();
     } catch (ex) {
       this.warning = ex.message;
-      this.results = null;
+      this.sortedData = null;
+      this.sortedAvgData = null;
+      this.sortedPlayers = [];
     } finally {
       this.analysing = false;
     }
   }
 
-  reset() {
+  clear() {
     this.warning = '';
     this.submitted = false;
     this.matchUrl = '';

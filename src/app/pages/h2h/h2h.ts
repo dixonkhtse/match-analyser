@@ -139,7 +139,7 @@ export class HeadToHeadComponent {
   //   );
   // }
 
-  reset() {
+  clear() {
     this.warning = '';
     this.submitted = false;
     this.commonMatchesModel = map(this.commonMatchesModel, () => ({ nickname: '' }));

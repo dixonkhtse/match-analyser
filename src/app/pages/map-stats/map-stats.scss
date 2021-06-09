@@ -1,8 +1,27 @@
+.sort-options {
+  font-size: 14px;
+
+  .sort-item {
+    display: flex;
+  }
+
+  .form-check {
+    margin-right: 16px;
+  }
+
+  .form-check-input,
+  .form-check-label {
+    cursor: pointer;
+  }
+}
+
 .output-table {
+  font-size: 14px;
 
   th,
   td {
     text-align: center;
+    vertical-align: middle;
   }
 
   div {
@@ -34,4 +53,8 @@
       height: 32px;
     }
   }
+}
+
+::ng-deep .mat-sort-header-container {
+  justify-content: center !important;
 }
