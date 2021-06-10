@@ -8,7 +8,7 @@ Run `ng serve` for a dev server. Navigate to `http://0.0.0.0:1337/`. The app wil
 
 ## Demo
 
-`https://dixonkhtse.github.io/match-analyser/`
+https://dixonkhtse.github.io/match-analyser/
 
 ## Deploy
 
