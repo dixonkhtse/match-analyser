@@ -1,4 +1,4 @@
-<app-base-page [hasOutput]="sortedData && sortedAvgData">
+<app-base-page [processing]="analysing" [hasOutput]="sortedData && sortedAvgData">
   <span page-title>Match Statistics</span>
   <span inputs-title>Enter Match Link and your FACEIT Nickname</span>
   <form inputs-form>
@@ -28,6 +28,8 @@
     </div>
     <div *ngIf="warning" class="text-danger mt-3">Error: {{ warning }}</div>
   </form>
+  <ngb-progressbar progress-indicator type="primary" animated="true" striped="true" [max]="progressMax"
+    [value]="progressNow"></ngb-progressbar>
   <span outputs-title *ngIf="targetFaction">{{ targetFaction.name }}'s Player Matrix</span>
   <div outputs-content>
     <div class="pre-table mb-3">

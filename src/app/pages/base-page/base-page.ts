@@ -6,6 +6,7 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./base-page.scss']
 })
 export class BasePageComponent {
+  @Input() processing = false;
   @Input() hasOutput = false;
 
   constructor() { }

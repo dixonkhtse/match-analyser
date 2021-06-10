@@ -15,6 +15,9 @@
   </div>
 </div>
 
+<!-- Progress -->
+<ng-content *ngIf="processing" select="[progress-indicator]"></ng-content>
+
 <!-- Page Outputs -->
 <div *ngIf="hasOutput" class="outputs rounded text-light">
   <h5 class="mb-3">

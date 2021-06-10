@@ -21,6 +21,8 @@ export class MatchStatsComponent {
   public results: any;
   public warning = '';
   public targetFaction: any;
+  public progressNow = 0;
+  public progressMax = 10;
   public rawData: any = [];
   public rawAvgData: any = [];
   public sortedData: any;
@@ -108,6 +110,7 @@ export class MatchStatsComponent {
     this.sortedAvgData = null;
     this.sortedPlayers = [];
     this.pSortModel = {};
+    this.progressNow = 0;
     try {
       const splitted = split(this.matchUrl, '/');
       const matchIdIdx = splitted.indexOf('room') + 1;
@@ -116,6 +119,7 @@ export class MatchStatsComponent {
         throw new Error('match_id not found.');
       }
       const response: any = await this.http.get(`${Constants.GET_MATCH_ENDPOINT}/${matchId}`, Constants.REQUEST_OPTIONS).toPromise();
+      this.progressNow += 1;
       if (!response) {
         throw new Error('Result not found.');
       }
@@ -129,12 +133,14 @@ export class MatchStatsComponent {
       await Promise.mapSeries(this.targetFaction.roster, async ({ nickname, game_skill_level, player_id }) => {
         const pStatsPath = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`;
         const playerStats: any = await this.http.get(pStatsPath, Constants.REQUEST_OPTIONS).toPromise();
+        this.progressNow += 1;
         if (!playerStats) {
           return true;
         }
         const pDetailsPath = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}`;
         const playerDetails: any = await this.http.get(pDetailsPath, Constants.REQUEST_OPTIONS).toPromise();
         if (!playerDetails) {
+          this.progressNow += 1;
           return true;
         }
         const { lifetime, segments } = playerStats;
@@ -161,6 +167,7 @@ export class MatchStatsComponent {
           return true;
         });
         this.players.push(playerData);
+        this.progressNow += 1;
         return true;
       });
       this.rawAvgData = _map(this.rawData, row => {
@@ -188,11 +195,12 @@ export class MatchStatsComponent {
       this.sortedAvgData = this.rawAvgData.slice();
     } catch (ex) {
       this.warning = ex.message;
+      this.sortedPlayers = [];
       this.sortedData = null;
       this.sortedAvgData = null;
-      this.sortedPlayers = [];
     } finally {
       this.analysing = false;
+      this.progressNow = 0;
     }
   }
 

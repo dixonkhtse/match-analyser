@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { BasePageComponent } from './pages/base-page/base-page';
 import { HeadToHeadComponent } from './pages/h2h/h2h';
 import { MatchStatsComponent } from './pages/match-stats/match-stats';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { MatchStatsComponent } from './pages/match-stats/match-stats';
     FormsModule,
     HttpClientModule,
     MatSortModule,
+    NgbModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
