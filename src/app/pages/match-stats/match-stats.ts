@@ -4,7 +4,7 @@ import { Sort } from '@angular/material/sort';
 import {
   get, set, split, mean,
   find, toLower, each, map as _map,
-  sortBy, reverse,
+  sortBy, reverse, trim,
 } from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from '../../common/constants';
@@ -125,12 +125,12 @@ export class MatchStatsComponent {
       }
       const { teams } = response;
       this.targetFaction = find(teams, ({ roster }) =>
-        find(roster, ({ nickname }) => toLower(nickname).includes(toLower(this.faceitUsername)))
+        find(roster, ({ nickname }) => toLower(nickname).includes(toLower(trim(this.faceitUsername))))
       );
       if (!this.targetFaction) {
         ({ faction1: this.targetFaction } = teams);
       }
-      await Promise.mapSeries(this.targetFaction.roster, async ({ nickname, game_skill_level, player_id }) => {
+      await Promise.mapSeries(this.targetFaction.roster, async ({ nickname, player_id }) => {
         const pStatsPath = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`;
         const playerStats: any = await this.http.get(pStatsPath, Constants.REQUEST_OPTIONS).toPromise();
         this.progressNow += 1;
@@ -147,7 +147,7 @@ export class MatchStatsComponent {
         const playerData: any = {
           player_id,
           nickname,
-          game_skill_level,
+          skill_level: get(playerDetails, 'games.csgo.skill_level'),
           elo: get(playerDetails, 'games.csgo.faceit_elo'),
           avgKd: get(lifetime, 'Average K/D Ratio'),
         };

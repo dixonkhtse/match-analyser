@@ -73,7 +73,7 @@
           </ng-container>
           <th *ngFor="let player of sortedPlayers" [attr.colspan]="statKeyConfigs.length">
             <div class="player-header">
-              <img src="assets/icons/lv{{ player.game_skill_level }}.svg" />
+              <img src="assets/icons/lv{{ player.skill_level }}.svg" />
               <div class="nickname">{{ player.nickname }}</div>
               <div class="elo-kd">
                 <div>Elo: {{ player.elo }}</div>
