@@ -159,6 +159,14 @@ html>body {
   border-color: rgba(255, 255, 255, .1);
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-text-fill-color: #fff !important;
+}
+
 .form-control-dark:focus {
   color: #fff;
   border-color: transparent;

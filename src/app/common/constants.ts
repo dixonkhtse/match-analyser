@@ -14,6 +14,7 @@ export class Constants {
     'de_overpass',
     'de_nuke',
     'de_vertigo',
+    'de_train',
     'de_ancient',
   ];
 }

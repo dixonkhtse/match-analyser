@@ -3,23 +3,24 @@ import { HttpClient } from '@angular/common/http';
 import { Sort } from '@angular/material/sort';
 import {
   get, set, split, mean,
-  find, findKey, toLower, each,
-  map as _map, sortBy, reverse,
+  find, toLower, each, map as _map,
+  sortBy, reverse,
 } from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from '../../common/constants';
 @Component({
-  selector: 'app-map-stats',
-  templateUrl: './map-stats.html',
-  styleUrls: ['./map-stats.scss']
+  selector: 'app-match-stats',
+  templateUrl: './match-stats.html',
+  styleUrls: ['./match-stats.scss']
 })
-export class MapStatsComponent {
-  public matchUrl = 'https://www.faceit.com/en/csgo/room/1-eb6d96eb-2403-4713-b730-cb91b5c54a7c/scoreboard';
-  public faceitUsername = 'itdog';
+export class MatchStatsComponent {
+  public matchUrl = '';
+  public faceitUsername = '';
   public submitted = false;
   public analysing = false;
   public results: any;
   public warning = '';
+  public targetFaction: any;
   public rawData: any = [];
   public rawAvgData: any = [];
   public sortedData: any;
@@ -38,20 +39,20 @@ export class MapStatsComponent {
     key: 'Win Rate %',
     label: 'Win Rate',
     postfix: '%',
-    classes: {
-      poor: [0, 49],
-      average: [50, 59],
-      good: [60, 100],
-    },
+    classes: [
+      { name: 'poor', range: [0, 49] },
+      { name: 'average', range: [50, 59] },
+      { name: 'good', range: [60, 100] },
+    ],
     digitsInfo: '0.0-0',
   }, {
     key: 'Average K/D Ratio',
     label: 'Avg. K/D',
-    classes: {
-      poor: [0, 0.99],
-      average: [1, 1.2],
-      good: [1.21, 99],
-    },
+    classes: [
+      { name: 'poor', range: [0, 0.99] },
+      { name: 'average', range: [1, 1.19] },
+      { name: 'good', range: [1.20, 99] },
+    ],
     digitsInfo: '1.2-2',
   }];
 
@@ -92,18 +93,21 @@ export class MapStatsComponent {
     if (!classes) {
       return '';
     }
-    return findKey(classes, ([min, max]) => value >= min && value <= max) || '';
+    const cl = find(classes, ({ range: [min, max] }) => value >= min && value <= max);
+    return get(cl, 'name', '');
   }
 
   async analyse() {
     this.warning = '';
     this.submitted = true;
     this.analysing = true;
+    this.targetFaction = null;
     this.players = [];
     this.rawData = _map(Constants.ACTIVE_DUTY_MAPS, map => ({ map }));
     this.sortedData = null;
     this.sortedAvgData = null;
     this.sortedPlayers = [];
+    this.pSortModel = {};
     try {
       const splitted = split(this.matchUrl, '/');
       const matchIdIdx = splitted.indexOf('room') + 1;
@@ -116,23 +120,29 @@ export class MapStatsComponent {
         throw new Error('Result not found.');
       }
       const { teams } = response;
-      let targetFaction = find(teams, ({ roster }) =>
+      this.targetFaction = find(teams, ({ roster }) =>
         find(roster, ({ nickname }) => toLower(nickname).includes(toLower(this.faceitUsername)))
       );
-      if (!targetFaction) {
-        ({ faction1: targetFaction } = teams);
+      if (!this.targetFaction) {
+        ({ faction1: this.targetFaction } = teams);
       }
-      await Promise.mapSeries(targetFaction.roster, async ({ nickname, game_skill_level, player_id }) => {
-        const path = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`;
-        const res: any = await this.http.get(path, Constants.REQUEST_OPTIONS).toPromise();
-        if (!res) {
+      await Promise.mapSeries(this.targetFaction.roster, async ({ nickname, game_skill_level, player_id }) => {
+        const pStatsPath = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`;
+        const playerStats: any = await this.http.get(pStatsPath, Constants.REQUEST_OPTIONS).toPromise();
+        if (!playerStats) {
           return true;
         }
-        const { lifetime, segments } = res;
+        const pDetailsPath = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}`;
+        const playerDetails: any = await this.http.get(pDetailsPath, Constants.REQUEST_OPTIONS).toPromise();
+        if (!playerDetails) {
+          return true;
+        }
+        const { lifetime, segments } = playerStats;
         const playerData: any = {
+          player_id,
           nickname,
           game_skill_level,
-          player_id,
+          elo: get(playerDetails, 'games.csgo.faceit_elo'),
           avgKd: get(lifetime, 'Average K/D Ratio'),
         };
         each(segments, mapData => {

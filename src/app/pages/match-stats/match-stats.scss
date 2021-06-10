@@ -1,3 +1,9 @@
+.pre-table {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
 .sort-options {
   font-size: 14px;
 
@@ -15,6 +21,22 @@
   }
 }
 
+.remarks {
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 2px;
+}
+
+.poor {
+  color: #d64242;
+}
+
+.good {
+  color: #5dbb29;
+}
+
 .output-table {
   font-size: 14px;
 
@@ -24,27 +46,20 @@
     vertical-align: middle;
   }
 
-  div {
-    &.poor {
-      color: #d64242;
-    }
-
-    &.good {
-      color: #5dbb29;
-    }
-  }
-
   th>div.player-header {
     display: flex;
     align-items: center;
     justify-content: center;
 
-    >.nickname,
-    img {
+    >img {
       margin-right: 4px;
     }
 
-    >.kd {
+    >.nickname {
+      margin-right: 8px;
+    }
+
+    >.elo-kd {
       font-size: 10px;
     }
 

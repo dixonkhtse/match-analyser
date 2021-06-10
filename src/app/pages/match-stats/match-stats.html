@@ -28,23 +28,37 @@
     </div>
     <div *ngIf="warning" class="text-danger mt-3">Error: {{ warning }}</div>
   </form>
-  <span outputs-title>Map Matrix</span>
+  <span outputs-title *ngIf="targetFaction">{{ targetFaction.name }}'s Player Matrix</span>
   <div outputs-content>
-    <div class="sort-options mb-3">
-      <div>Sort players by:</div>
-      <div *ngFor="let field of pSortFields" class="form-check">
-        <input class="form-check-input" type="radio" name="sortKey" [id]="field.key" [value]="field.key"
-          [(ngModel)]="pSortModel.sortKey" (ngModelChange)="sortPlayers()">
-        <label class="form-check-label" [for]="field.key">
-          {{ field.label }}
-        </label>
+    <div class="pre-table mb-3">
+      <div class="sort-options">
+        <div>Sort players by:</div>
+        <div *ngFor="let field of pSortFields" class="form-check">
+          <input class="form-check-input" type="radio" name="sortKey" [id]="field.key" [value]="field.key"
+            [(ngModel)]="pSortModel.sortKey" (ngModelChange)="sortPlayers()">
+          <label class="form-check-label" [for]="field.key">
+            {{ field.label }}
+          </label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="isAsc" [(ngModel)]="pSortModel._isAsc"
+            [disabled]="!pSortModel.sortKey" (ngModelChange)="sortPlayers()">
+          <label class="form-check-label" for="isAsc">
+            {{ pSortModel._isAsc ? 'Ascending' : 'Descending' }}
+          </label>
+        </div>
       </div>
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="isAsc" [(ngModel)]="pSortModel._isAsc"
-          [disabled]="!pSortModel.sortKey" (ngModelChange)="sortPlayers()">
-        <label class="form-check-label" for="isAsc">
-          {{ pSortModel._isAsc ? 'Ascending' : 'Descending' }}
-        </label>
+      <div class="remarks">
+        <ng-container *ngFor="let item of statKeyConfigs">
+          <div *ngIf="item.classes">
+            <span>{{ item.label || item.key }}: </span>
+            <span *ngFor="let cl of item.classes; let i = index" [class]="cl.name">
+              <span>{{ cl.range[0] }}-{{ cl.range[1] }}</span>
+              <span *ngIf="item.postfix">{{ item.postfix }}</span>
+              <span *ngIf="i < item.classes.length - 1">, </span>
+            </span>
+          </div>
+        </ng-container>
       </div>
     </div>
     <table *ngIf="sortedData" matSort class="output-table table table-bordered text-light mb-3"
@@ -52,11 +66,17 @@
       <thead>
         <tr>
           <th>Players</th>
+          <ng-container>
+
+          </ng-container>
           <th *ngFor="let player of sortedPlayers" [attr.colspan]="statKeyConfigs.length">
             <div class="player-header">
-              <div class="nickname">{{ player.nickname }}</div>
               <img src="assets/icons/lv{{ player.game_skill_level }}.svg" />
-              <div class="kd">({{ player.avgKd }})</div>
+              <div class="nickname">{{ player.nickname }}</div>
+              <div class="elo-kd">
+                <div>Elo: {{ player.elo }}</div>
+                <div>K/D: {{ player.avgKd }}</div>
+              </div>
             </div>
           </th>
         </tr>
@@ -75,7 +95,7 @@
           <ng-container *ngFor="let player of sortedPlayers">
             <td *ngFor="let item of statKeyConfigs">
               <ng-container *ngIf="player.player_id + '_' + item.key; let dataKey">
-                <div *ngIf="row[dataKey]" [class]="findClass(row[dataKey], item)">
+                <div *ngIf="row[dataKey] !== undefined" [class]="findClass(row[dataKey], item)">
                   <span *ngIf="!item.digitsInfo">{{ row[dataKey] }}</span>
                   <span *ngIf="item.digitsInfo">{{ row[dataKey] | number: item.digitsInfo }}</span>
                   <span *ngIf="item.postfix">{{ item.postfix }}</span>
@@ -86,7 +106,7 @@
         </tr>
       </tbody>
     </table>
-    <h5 class="mb-3">Team Average</h5>
+    <h5 *ngIf="targetFaction" class="mb-3">{{ targetFaction.name }}'s Average</h5>
     <table *ngIf="sortedAvgData" matSort class="output-table table table-bordered text-light mb-3"
       (matSortChange)="sortData($event, 'sortedAvgData', 'rawAvgData')">
       <thead>
