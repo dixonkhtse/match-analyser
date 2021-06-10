@@ -31,7 +31,7 @@ export class MatchStatsComponent {
   public sortedPlayers: any = [];
   public pSortModel: any = {};
   public pSortFields: any = [
-    { key: 'game_skill_level', label: 'Level' },
+    { key: 'elo', label: 'Elo' },
     { key: 'avgKd', label: 'Average K/D Ratio' },
   ];
   public statKeyConfigs = [{
