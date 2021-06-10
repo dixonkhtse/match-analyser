@@ -4,6 +4,29 @@
   justify-content: space-between;
 }
 
+.table-options {
+  display: flex;
+  align-items: flex-start;
+}
+
+.stat-options {
+  .checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 280px;
+  }
+
+  .form-check {
+    font-size: 14px;
+    margin-right: 16px;
+
+    .form-check-input,
+    .form-check-label {
+      cursor: pointer;
+    }
+  }
+}
+
 .sort-options {
   font-size: 14px;
 
@@ -35,6 +58,11 @@
 
 .good {
   color: #5dbb29;
+}
+
+.data-table-container {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .output-table {

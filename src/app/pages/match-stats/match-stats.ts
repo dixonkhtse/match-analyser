@@ -4,7 +4,7 @@ import { Sort } from '@angular/material/sort';
 import {
   get, set, split, mean,
   find, toLower, each, map as _map,
-  sortBy, reverse, trim,
+  sortBy, reverse, trim, filter,
 } from 'lodash';
 import { Promise } from 'bluebird';
 import { Constants } from '../../common/constants';
@@ -14,8 +14,8 @@ import { Constants } from '../../common/constants';
   styleUrls: ['./match-stats.scss']
 })
 export class MatchStatsComponent {
-  public matchUrl = '';
-  public faceitUsername = '';
+  public matchUrl = 'https://www.faceit.com/en/csgo/room/1-94edf115-0bc6-4d26-8286-a082e5610f8f/scoreboard';
+  public faceitUsername = 'D0cC';
   public submitted = false;
   public analysing = false;
   public results: any;
@@ -29,11 +29,17 @@ export class MatchStatsComponent {
   public sortedAvgData: any;
   public players: any = [];
   public sortedPlayers: any = [];
+  public wantedStatKeyConfigs: any = [];
   public pSortModel: any = {};
   public pSortFields: any = [
     { key: 'elo', label: 'Elo' },
     { key: 'avgKd', label: 'Average K/D Ratio' },
   ];
+  public statOptsModel: any = {
+    Matches: true,
+    'Win Rate %': true,
+    'Average K/D Ratio': true,
+  };
   public statKeyConfigs = [{
     key: 'Matches',
     digitsInfo: '0.0-0',
@@ -56,10 +62,29 @@ export class MatchStatsComponent {
       { name: 'good', range: [1.20, 99] },
     ],
     digitsInfo: '1.2-2',
+  }, {
+    key: 'Average K/R Ratio',
+    label: 'Avg. K/R',
+    classes: [
+      { name: 'poor', range: [0, 0.64] },
+      { name: 'average', range: [0.65, 0.79] },
+      { name: 'good', range: [0.80, 5] },
+    ],
+    digitsInfo: '1.2-2',
+  }, {
+    key: 'Average Kills',
+    label: 'Avg. Kills',
+    classes: [
+      { name: 'poor', range: [0, 14] },
+      { name: 'average', range: [15, 24] },
+      { name: 'good', range: [25, 99] },
+    ],
+    digitsInfo: '0.0-0',
   }];
 
   constructor(private http: HttpClient) {
     this.rawData = _map(Constants.ACTIVE_DUTY_MAPS, map => ({ map }));
+    this.filterStatKeyConfigs();
   }
 
   compare(a, b, isAsc) {
@@ -90,7 +115,11 @@ export class MatchStatsComponent {
     this.sortedPlayers = sorted;
   }
 
-  public findClass(value, statKeyConf) {
+  filterStatKeyConfigs() {
+    this.wantedStatKeyConfigs = filter(this.statKeyConfigs.slice(), ({ key }) => this.statOptsModel[key]);
+  }
+
+  findClass(value, statKeyConf) {
     const classes = get(statKeyConf, 'classes');
     if (!classes) {
       return '';
@@ -109,7 +138,6 @@ export class MatchStatsComponent {
     this.sortedData = null;
     this.sortedAvgData = null;
     this.sortedPlayers = [];
-    this.pSortModel = {};
     this.progressNow = 0;
     try {
       const splitted = split(this.matchUrl, '/');
@@ -193,6 +221,7 @@ export class MatchStatsComponent {
       this.sortedPlayers = this.players.slice();
       this.sortedData = this.rawData.slice();
       this.sortedAvgData = this.rawAvgData.slice();
+      this.sortPlayers();
     } catch (ex) {
       this.warning = ex.message;
       this.sortedPlayers = [];
