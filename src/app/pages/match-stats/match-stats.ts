@@ -152,8 +152,8 @@ export class MatchStatsComponent {
           avgKd: get(lifetime, 'Average K/D Ratio'),
         };
         each(segments, mapData => {
-          const { label: mapName } = mapData;
-          if (!Constants.ACTIVE_DUTY_MAPS.includes(mapName)) {
+          const { label: mapName, mode } = mapData;
+          if (mode !== Constants.GAME_MODE || !Constants.ACTIVE_DUTY_MAPS.includes(mapName)) {
             return true;
           }
           const mapDataRow = find(this.rawData, ({ map }) => map === mapName);
