@@ -18,7 +18,7 @@ $match-analyser-accent: mat-palette($mat-pink, A200, A100, A400);
 $match-analyser-warn: mat-palette($mat-red);
 
 // Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
+// theming systems such as 'color' or 'typography'.
 $match-analyser-theme: mat-light-theme((color: (primary: $match-analyser-primary,
       accent: $match-analyser-accent,
       warn: $match-analyser-warn,
@@ -30,25 +30,20 @@ $match-analyser-theme: mat-light-theme((color: (primary: $match-analyser-primary
 @include angular-material-theme($match-analyser-theme);
 
 /* You can add global styles to this file, and also import other style files */
-$primary: #f50;
-$secondary: #1f1f1f;
-$success:#5dbb29;
-$danger: #d64242;
-$light: #ffffff;
-$dark: #181818;
+@import './variables.scss';
 
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';
-@import "../node_modules/bootstrap/scss/bootstrap";
-@import "../node_modules/bootstrap/scss/functions";
-@import "../node_modules/bootstrap/scss/variables";
-@import "../node_modules/bootstrap/scss/mixins";
+@import '../node_modules/bootstrap/scss/bootstrap';
+@import '../node_modules/bootstrap/scss/functions';
+@import '../node_modules/bootstrap/scss/variables';
+@import '../node_modules/bootstrap/scss/mixins';
 
 html,
 html>body {
   width: 100%;
   height: 100%;
-  background-color: #1f1f1f;
+  background-color: $secondary;
 }
 
 @font-face {
@@ -57,81 +52,16 @@ html>body {
 }
 
 .faceit-orange {
-  color: #f50 !important
+  color: $primary !important
 }
 
 .faceit-dark {
-  background-color: #181818;
+  background-color: $dark;
   color: white;
 }
 
 * {
   font-family: 'play',
-}
-
-
-/*
- * Sidebar
- */
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  /* rtl:raw:
-    right: 0;
-    */
-  bottom: 0;
-  /* rtl:remove */
-  left: 0;
-  z-index: 100;
-  /* Behind the navbar */
-  padding: 48px 0 0;
-  /* Height of navbar */
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-}
-
-@media (max-width: 767.98px) {
-  .sidebar {
-    top: 5rem;
-  }
-}
-
-.sidebar-sticky {
-  position: relative;
-  top: 0;
-  height: calc(100vh - 48px);
-  padding-top: .5rem;
-  overflow-x: hidden;
-  overflow-y: auto;
-  /* Scrollable contents if viewport is shorter than content. */
-}
-
-.sidebar .nav-link {
-  font-weight: 500;
-  color: white;
-}
-
-.sidebar .nav-link .feather {
-  margin-right: 4px;
-  color: #727272;
-}
-
-.sidebar .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.sidebar .nav-link.active {
-  color: #f50 !important;
-}
-
-.sidebar .nav-link:hover .feather,
-.sidebar .nav-link.active .feather {
-  color: inherit;
-}
-
-.sidebar-heading {
-  font-size: .75rem;
-  text-transform: uppercase;
 }
 
 /*
@@ -145,8 +75,7 @@ html>body {
 }
 
 .navbar .navbar-toggler {
-  top: .25rem;
-  right: 1rem;
+  margin-right: 1rem;
 }
 
 .navbar .form-control {
@@ -156,7 +85,7 @@ html>body {
 }
 
 .form-control-dark {
-  color: #fff;
+  color: $light;
   background-color: rgba(255, 255, 255, .1);
   border-color: rgba(255, 255, 255, .1);
 }
@@ -166,11 +95,11 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   transition: background-color 5000s ease-in-out 0s !important;
-  -webkit-text-fill-color: #fff !important;
+  -webkit-text-fill-color: $light !important;
 }
 
 .form-control-dark:focus {
-  color: #fff;
+  color: $light;
   border-color: transparent;
   background-color: rgba(255, 255, 255, .1);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);

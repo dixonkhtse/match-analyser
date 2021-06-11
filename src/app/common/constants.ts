@@ -5,9 +5,6 @@ export class Constants {
   public static GET_MATCH_ENDPOINT = 'https://open.faceit.com/data/v4/matches';
   public static GET_PLAYERS_ENDPOINT = 'https://open.faceit.com/data/v4/players';
   public static API_PREFIX = 'https://open.faceit.com/data/v4';
-  public static REQUEST_OPTIONS: any = {
-    headers: { Authorization: `Bearer ${Constants.AUTH_TOKEN}` },
-  };
   public static ACTIVE_DUTY_MAPS = [
     'de_dust2',
     'de_mirage',

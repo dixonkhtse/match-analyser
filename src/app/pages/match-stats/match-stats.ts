@@ -1,12 +1,21 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Sort } from '@angular/material/sort';
 import {
-  get, set, split, mean,
-  find, toLower, each, map as _map,
-  sortBy, reverse, trim, filter,
+  get,
+  set,
+  split,
+  mean,
+  find,
+  toLower,
+  each,
+  map as _map,
+  sortBy,
+  reverse,
+  trim,
+  filter,
 } from 'lodash';
 import { Promise } from 'bluebird';
+import { ApiService } from '../../services/api.service';
 import { Constants } from '../../common/constants';
 @Component({
   selector: 'app-match-stats',
@@ -82,7 +91,7 @@ export class MatchStatsComponent {
     digitsInfo: '0.0-0',
   }];
 
-  constructor(private http: HttpClient) {
+  constructor(private apiSvc: ApiService) {
     this.rawData = _map(Constants.ACTIVE_DUTY_MAPS, map => ({ map }));
     this.filterStatKeyConfigs();
   }
@@ -146,7 +155,7 @@ export class MatchStatsComponent {
       if (matchIdIdx === 0 || !matchId) {
         throw new Error('match_id not found.');
       }
-      const response: any = await this.http.get(`${Constants.GET_MATCH_ENDPOINT}/${matchId}`, Constants.REQUEST_OPTIONS).toPromise();
+      const response: any = await this.apiSvc.request({ method: 'get', path: `${Constants.GET_MATCH_ENDPOINT}/${matchId}` });
       this.progressNow += 1;
       if (!response) {
         throw new Error('Result not found.');
@@ -160,13 +169,13 @@ export class MatchStatsComponent {
       }
       await Promise.mapSeries(this.targetFaction.roster, async ({ nickname, player_id }) => {
         const pStatsPath = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}/stats/${Constants.GAME_ID_CSGO}`;
-        const playerStats: any = await this.http.get(pStatsPath, Constants.REQUEST_OPTIONS).toPromise();
+        const playerStats: any = await this.apiSvc.request({ method: 'get', path: pStatsPath });
         this.progressNow += 1;
         if (!playerStats) {
           return true;
         }
         const pDetailsPath = `${Constants.GET_PLAYERS_ENDPOINT}/${player_id}`;
-        const playerDetails: any = await this.http.get(pDetailsPath, Constants.REQUEST_OPTIONS).toPromise();
+        const playerDetails: any = await this.apiSvc.request({ method: 'get', path: pDetailsPath });
         if (!playerDetails) {
           this.progressNow += 1;
           return true;

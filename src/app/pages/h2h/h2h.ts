@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { keyBy, intersectionBy, map, filter, set } from 'lodash';
 import { Promise } from 'bluebird';
+import { ApiService } from '../../services/api.service';
 import { Constants } from '../../common/constants';
 
 @Component({
@@ -20,7 +20,7 @@ export class HeadToHeadComponent {
   public result: any;
   public warning = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private apiSvc: ApiService) { }
 
   async findCommonMatches() {
     this.analysing = true;
@@ -73,7 +73,7 @@ export class HeadToHeadComponent {
   }
 
   async getPlayerByNickname(nickname) {
-    return this.http.get(`${Constants.GET_PLAYERS_ENDPOINT}?nickname=${nickname}`, Constants.REQUEST_OPTIONS).toPromise();
+    return this.apiSvc.request({ method: 'get', path: `${Constants.GET_PLAYERS_ENDPOINT}?nickname=${nickname}` });
   }
 
   async getPlayerIdByNickname(nickname) {
@@ -85,15 +85,15 @@ export class HeadToHeadComponent {
   }
 
   async getPlayerMatchHistoryById(playerId) {
-    return this.http.get(`https://api.faceit.com/stats/v1/stats/time/users/${playerId}/games/csgo?page=0&size=2000`).toPromise();
+    return this.apiSvc.request({ method: 'get', path: `https://api.faceit.com/stats/v1/stats/time/users/${playerId}/games/csgo?page=0&size=2000` });
   }
 
   async getMatchSummary(matchId) {
-    return this.http.get(`${Constants.GET_MATCH_ENDPOINT}/${matchId}`, Constants.REQUEST_OPTIONS).toPromise();
+    return this.apiSvc.request({ method: 'get', path: `${Constants.GET_MATCH_ENDPOINT}/${matchId}` });
   }
 
   async getMatchStats(matchId) {
-    return this.http.get(`${Constants.GET_MATCH_ENDPOINT}/${matchId}/stats`, Constants.REQUEST_OPTIONS).toPromise();
+    return this.apiSvc.request({ method: 'get', path: `${Constants.GET_MATCH_ENDPOINT}/${matchId}/stats` });
   }
 
   intersectMatchHistory(h1, h2) {

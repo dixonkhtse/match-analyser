@@ -1,3 +1,5 @@
+@import '/src/variables.scss';
+
 .pre-table {
   display: flex;
   align-items: flex-end;
@@ -14,12 +16,12 @@
   .checkbox-container {
     display: flex;
     flex-wrap: wrap;
-    width: 280px;
+    width: 17.5rem;
   }
 
   .form-check {
-    font-size: 14px;
-    margin-right: 16px;
+    font-size: 0.85rem;
+    margin-right: 1rem;
 
     .form-check-input,
     .form-check-label {
@@ -29,14 +31,14 @@
 }
 
 .sort-options {
-  font-size: 14px;
+  font-size: 0.85rem;
 
   .sort-item {
     display: flex;
   }
 
   .form-check {
-    margin-right: 16px;
+    margin-right: 1rem;
   }
 
   .form-check-input,
@@ -46,20 +48,20 @@
 }
 
 .remarks {
-  font-size: 12px;
+  font-size: 0.75rem;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   flex: 1;
-  margin-bottom: 2px;
+  margin-bottom: 0.125rem;
 }
 
 .poor {
-  color: #d64242;
+  color: $danger;
 }
 
 .good {
-  color: #5dbb29;
+  color: $success;
 }
 
 .data-table-container {
@@ -68,7 +70,7 @@
 }
 
 .output-table {
-  font-size: 14px;
+  font-size: 0.85rem;
 
   th,
   td {
@@ -82,20 +84,20 @@
     justify-content: center;
 
     >img {
-      margin-right: 4px;
+      margin-right: 0.25rem;
     }
 
     >.nickname {
-      margin-right: 8px;
+      margin-right: 0.5rem;
     }
 
     >.elo-kd {
-      font-size: 10px;
+      font-size: 0.625rem;
     }
 
     img {
-      width: 32px;
-      height: 32px;
+      width: 2rem;
+      height: 2rem;
     }
   }
 }
