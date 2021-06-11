@@ -4,13 +4,13 @@
       <div class="position-sticky nav-btns-container" role="tablist">
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link" data-bs-target="#nav-match-stats" role="tab" data-bs-toggle="tab">
+            <a class="nav-link active" data-bs-target="#nav-match-stats" role="tab" data-bs-toggle="tab">
               <img src="assets/icons/match_stats.svg" />
               <span>Match stats</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" data-bs-target="#nav-h2h" role="tab" data-bs-toggle="tab">
+            <a class="nav-link" data-bs-target="#nav-h2h" role="tab" data-bs-toggle="tab">
               <img src="assets/icons/h2h.svg" />
               <span>Head to head</span>
             </a>
@@ -20,10 +20,11 @@
     </nav>
 
     <main class="tab-content">
-      <app-h2h id="nav-h2h" class="col-md-10 ms-sm-auto col-lg-10 px-md-4 tab-pane fade show active" role="tabpanel">
-      </app-h2h>
-      <app-match-stats id="nav-match-stats" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 tab-pane fade" role="tabpanel">
+      <app-match-stats id="nav-match-stats" class="col-md-9 ms-sm-auto col-lg-10 px-md-4 tab-pane fade show active"
+        role="tabpanel">
       </app-match-stats>
+      <app-h2h id="nav-h2h" class="col-md-10 ms-sm-auto col-lg-10 px-md-4 tab-pane fade" role="tabpanel">
+      </app-h2h>
     </main>
 
   </div>
