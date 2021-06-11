@@ -77,8 +77,8 @@
         </ng-container>
       </div>
     </div>
-    <div *ngIf="sortedData" class="data-table-container">
-      <table matSort class="output-table table table-bordered text-light mb-3"
+    <div *ngIf="sortedData" class="data-table-container mb-3">
+      <table matSort class="output-table table table-bordered text-light"
         (matSortChange)="sortData($event, 'sortedData', 'rawData')">
         <thead>
           <tr>
@@ -122,8 +122,8 @@
       </table>
     </div>
     <h5 *ngIf="targetFaction" class="mb-3">{{ targetFaction.name }}'s Average</h5>
-    <div *ngIf="sortedAvgData" class="data-table-container">
-      <table matSort class="output-table table table-bordered text-light mb-3"
+    <div *ngIf="sortedAvgData" class="data-table-container mb-3">
+      <table matSort class="output-table table table-bordered text-light"
         (matSortChange)="sortData($event, 'sortedAvgData', 'rawAvgData')">
         <thead>
           <tr>
