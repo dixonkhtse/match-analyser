@@ -12,9 +12,10 @@ import { Constants } from '../../common/constants';
 export class HeadToHeadComponent {
   public commonMatchesModel = [
     { nickname: 'IcedGreenTea' },
-    { nickname: 'yymac' },
+    { nickname: '1thoipro' },
   ];
   public commonMatchesList: any;
+  public commonMatchesIdList: String[];
   public submitted = false;
   public analysing = false;
   public result: any;
@@ -45,14 +46,14 @@ export class HeadToHeadComponent {
         playerList.push(player);
       });
 
-      const commonMatchesIdList = this.intersectMatchHistory(playerList[0].matchHistory, playerList[1].matchHistory);
+      this.commonMatchesIdList = this.intersectMatchHistory(playerList[0].matchHistory, playerList[1].matchHistory);
 
       for (const player of playerList) {
-        const commonMatches = filter(player.matchHistory, (match) => commonMatchesIdList.indexOf(match.matchId) > -1);
+        const commonMatches = filter(player.matchHistory, (match) => this.commonMatchesIdList.indexOf(match.matchId) > -1);
         set(player, 'commonMatches', commonMatches);
       }
 
-      await Promise.mapSeries(commonMatchesIdList, async (matchId) => {
+      await Promise.mapSeries(this.commonMatchesIdList, async (matchId) => {
         const matchStats: any = await this.getMatchStats(matchId);
         for (const round of matchStats.rounds) {
           set(round, 'teams', keyBy(round.teams, 'team_id'));
