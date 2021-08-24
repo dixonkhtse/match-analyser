@@ -85,7 +85,7 @@ export class HeadToHeadComponent {
   }
 
   async getPlayerMatchHistoryById(playerId) {
-    return this.apiSvc.request({ method: 'get', path: `https://api.faceit.com/stats/v1/stats/time/users/${playerId}/games/csgo?page=0&size=2000` });
+    return this.apiSvc.requestV1({ method: 'get', path: `https://api.faceit.com/stats/v1/stats/time/users/${playerId}/games/csgo?page=0&size=2000` });
   }
 
   async getMatchSummary(matchId) {
@@ -99,45 +99,6 @@ export class HeadToHeadComponent {
   intersectMatchHistory(h1, h2) {
     return map(intersectionBy(h1, h2, 'matchId'), 'matchId');
   }
-
-  // checkCommonMatches() {
-  //   var playerOneNickname = $("#player1").val();
-  //   var playerTwoNickname = $("#player2").val();
-  //   var playerOneId, playerTwoId, playerOneStats, playerTwoStats, matchesPlayedTgt;
-
-  //   var style = "font-weight: bold; background-color: yellow;"
-  //   console.log(`%cMatches between ${playerOneNickname} and ${playerTwoNickname}`, style);
-
-  //   //https://api.faceit.com/match/v2/match/1-df626bd0-1a7e-475d-8851-1621e20e4bd4
-
-  //   $.when(getPlayerIdByNickname(playerOneNickname), getPlayerIdByNickname(playerTwoNickname)).done(
-  //     function (p1, p2) {
-  //       $.when(getPlayerMatchHistoryById(p1), getPlayerMatchHistoryById(p2)).done(
-  //         function (p1History, p2History) {
-  //           var p1HistoryObj = arrayToObject(p1History[0], 'matchId');
-  //           var p2HistoryObj = arrayToObject(p2History[0], 'matchId');
-
-  //           var commonMatches = findCommonMatches(p1History[0], p2History[0]);
-  //           var commonMatchesTableData = [];
-  //           _.each(commonMatches, function (matchId) {
-  //             console.log("matchId", matchId);
-  //             commonMatchesTableData.push(p2HistoryObj[matchId]);
-  //           })
-  //           console.log(commonMatchesTableData);
-  //           $('#common-matches-table').DataTable(
-  //             {
-  //               data: commonMatchesTableData,
-  //               "columns": [
-  //                 { title: "Match ID", data: "matchId" },
-  //                 { title: "Map", data: "i1" }
-  //               ]
-  //             }
-  //           );
-  //         }
-  //       )
-  //     }
-  //   );
-  // }
 
   clear() {
     this.warning = '';

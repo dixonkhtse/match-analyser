@@ -18,4 +18,12 @@ export class ApiService {
     }
     return this.http[method](path, { ...options, headers: { Authorization: `Bearer ${Constants.AUTH_TOKEN}` } }).toPromise();
   }
+
+  public async requestV1(params) {
+    const { method, path, options = {} } = params;
+    if (!isFunction(this.http[method])) {
+      throw new Error('API service: invalid method');
+    }
+    return this.http[method](path, { ...options }).toPromise();
+  }
 }
